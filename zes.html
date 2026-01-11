@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microlearning: Zero Energy State</title>
+    <style>
+        :root {
+            --primary: #0056b3; /* Corporate Blue */
+            --accent: #FFD700; /* Safety Yellow */
+            --text: #333;
+            --bg: #f4f4f4;
+            --success: #28a745;
+            --danger: #dc3545;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* NAVIGATION & LAYOUT */
+        header {
+            background-color: #222;
+            color: white;
+            width: 100%;
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: white;
+            margin: 20px 0;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-pills {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .nav-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+            border-bottom: 4px solid transparent;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .section { display: none; }
+        .section.active { display: block; fade-in: 0.5s; }
+
+        /* BUTTONS */
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+        .btn:hover { opacity: 0.9; }
+        .btn-next { float: right; }
+        
+        /* MODULE 1 STYLES */
+        .energy-card {
+            border-left: 5px solid var(--accent);
+            background: #fff3cd;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        /* MODULE 2: GAMES */
+        .game-box {
+            border: 2px solid #ccc;
+            background: #eee;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        /* Game 1: Energy Hunt */
+        #hunt-area {
+            height: 200px;
+            background: #444;
+            position: relative;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .hazard {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 215, 0, 0.3); /* Hidden yellow */
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px dashed var(--accent);
+        }
+        .hazard.found { background: var(--accent); }
+
+        /* Game 2: Bleed Valve */
+        #pressure-gauge {
+            width: 100%;
+            height: 30px;
+            background: #ddd;
+            margin: 20px 0;
+            position: relative;
+        }
+        #pressure-fill {
+            width: 100%; /* Start full */
+            height: 100%;
+            background: var(--danger);
+            transition: width 0.2s linear;
+        }
+        #bleed-btn:active { background: var(--danger); }
+
+        /* MODULE 3: QUIZ */
+        .question-block {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .options label {
+            display: block;
+            margin: 5px 0;
+            padding: 8px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+        .options label:hover { background: #e2e6ea; }
+        .options input { margin-right: 10px; }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Zero Energy State (ZES) Training</h1>
+</header>
+
+<div class="container">
+    <div class="nav-pills">
+        <div class="nav-item active" onclick="showSection('mod1')">1. Concepts</div>
+        <div class="nav-item" onclick="showSection('mod2')">2. Simulations</div>
+        <div class="nav-item" onclick="showSection('mod3')">3. Assessment</div>
+    </div>
+
+    <div id="mod1" class="section active">
+        <h2>What is Zero Energy State?</h2>
+        <p>Turning a machine "OFF" is not enough. <strong>Zero Energy State (ZES)</strong> means all energy sources have been isolated, blocked, or dissipated.</p>
+        
+        <h3>The Hidden Killers: Stored Energy</h3>
+        <p>Even after electrical lockout, machines can retain energy. Review these common types:</p>
+        
+        <div class="energy-card">
+            <strong>1. Pneumatic/Hydraulic:</strong> Pressure trapped in lines or cylinders.
+            <br><em>Mitigation:</em> Bleed valves and pressure gauges.
+        </div>
+        <div class="energy-card">
+            <strong>2. Potential (Gravity):</strong> A heavy press ram held up by a cylinder.
+            <br><em>Mitigation:</em> Blocking pins or lowering to the ground.
+        </div>
+        <div class="energy-card">
+            <strong>3. Capacitance:</strong> Electrical charge stored in batteries or capacitors.
+            <br><em>Mitigation:</em> Grounding rods or waiting for discharge.
+        </div>
+        <div class="energy-card">
+            <strong>4. Mechanical:</strong> Springs under tension.
+            <br><em>Mitigation:</em> Release tension or block movement.
+        </div>
+
+        <button class="btn btn-next" onclick="showSection('mod2')">Go to Simulations &rarr;</button>
+    </div>
+
+    <div id="mod2" class="section">
+        <h2>Interactive Practice</h2>
+        <p>Complete these 3 safety checks to proceed.</p>
+
+        <div class="game-box">
+            <h3>1. The Energy Hunt</h3>
+            <p>Click the 3 hidden energy sources on this machine diagram to tag them.</p>
+            <div id="hunt-area">
+                [ MACHINE DIAGRAM ]
+                <div class="hazard" style="top: 20%; left: 30%;" onclick="foundHazard(this, 'Spring Tension')"></div>
+                <div class="hazard" style="top: 60%; left: 70%;" onclick="foundHazard(this, 'Hot Surface')"></div>
+                <div class="hazard" style="top: 40%; left: 50%;" onclick="foundHazard(this, 'Hydraulic Pressure')"></div>
+            </div>
+            <p id="hunt-status">Found: 0/3</p>
+        </div>
+
+        <div class="game-box">
+            <h3>2. The Pressure Bleed</h3>
+            <p><strong>Hold down</strong> the "OPEN VALVE" button to drain the hydraulic line. <br>Release exactly when it hits 0 PSI. Do not release early!</p>
+            <div id="pressure-gauge"><div id="pressure-fill"></div></div>
+            <h4 id="psi-display">2000 PSI</h4>
+            <button id="bleed-btn" class="btn" onmousedown="startBleed()" onmouseup="stopBleed()" onmouseleave="stopBleed()">HOLD TO OPEN VALVE</button>
+            <p id="bleed-result"></p>
+        </div>
+
+        <div class="game-box">
+            <h3>3. The Gravity Block</h3>
+            <p>A 2-ton ram is suspended. You cut the power. Is it ZES?</p>
+            <div id="ram-status" style="font-weight:bold; margin:10px; color:var(--danger)">STATUS: SUSPENDED (DANGER)</div>
+            <button class="btn" onclick="checkGravity(false)">Yes, it's safe.</button>
+            <button class="btn" onclick="checkGravity(true)">No, insert Safety Blocks.</button>
+            <p id="gravity-result"></p>
+        </div>
+
+        <button class="btn btn-next" onclick="showSection('mod3')">Take Final Exam &rarr;</button>
+    </div>
+
+    <div id="mod3" class="section">
+        <h2>Final Knowledge Check</h2>
+        <form id="quiz-form">
+            <div class="question-block">
+                <p><strong>1. What defines "Zero Energy State"?</strong></p>
+                <div class="options">
+                    <label><input type="radio" name="q1" value="0"> When the machine is turned off.</label>
+                    <label><input type="radio" name="q1" value="1"> When all energy sources are isolated, dissipated, and verified.</label>
+                    <label><input type="radio" name="q1" value="0"> When the emergency stop is pressed.</label>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <p><strong>2. Which is an example of "Potential Energy" in a machine?</strong></p>
+                <div class="options">
+                    <label><input type="radio" name="q2" value="1"> A raised hydraulic arm.</label>
+                    <label><input type="radio" name="q2" value="0"> A spinning motor.</label>
+                    <label><input type="radio" name="q2" value="0"> A hot pipe.</label>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <p><strong>3. After locking out electrical power, you notice the pressure gauge reads 50 PSI. Can you work?</strong></p>
+                <div class="options">
+                    <label><input type="radio" name="q3" value="0"> Yes, 50 PSI is low.</label>
+                    <label><input type="radio" name="q3" value="1"> No, you must bleed the stored pressure.</label>
+                    <label><input type="radio" name="q3" value="0"> Yes, if you wear gloves.</label>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <p><strong>4. How do you treat a tensioned spring during ZES?</strong></p>
+                <div class="options">
+                    <label><input type="radio" name="q4" value="0"> Ignore it if the motor is off.</label>
+                    <label><input type="radio" name="q4" value="0"> Hold it with your hand.</label>
+                    <label><input type="radio" name="q4" value="1"> Block it or release the tension.</label>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <p><strong>5. When is the ZES procedure complete?</strong></p>
+                <div class="options">
+                    <label><input type="radio" name="q5" value="1"> After verification ("Trying") proves zero energy.</label>
+                    <label><input type="radio" name="q5" value="0"> As soon as the lock is applied.</label>
+                    <label><input type="radio" name="q5" value="0"> When the supervisor says so.</label>
+                </div>
+            </div>
+
+            <button type="button" class="btn" onclick="gradeQuiz()">Submit Exam</button>
+        </form>
+        <div id="quiz-results" style="margin-top:20px; font-weight:bold; font-size:1.2em;"></div>
+    </div>
+</div>
+
+<script>
+    // --- NAVIGATION LOGIC ---
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(id).classList.add('active');
+        
+        // Highlight tab
+        if(id === 'mod1') document.querySelectorAll('.nav-item')[0].classList.add('active');
+        if(id === 'mod2') document.querySelectorAll('.nav-item')[1].classList.add('active');
+        if(id === 'mod3') document.querySelectorAll('.nav-item')[2].classList.add('active');
+    }
+
+    // --- GAME 1: ENERGY HUNT ---
+    let hazardsFound = 0;
+    function foundHazard(el, name) {
+        if(el.classList.contains('found')) return;
+        
+        el.classList.add('found');
+        el.style.backgroundColor = 'var(--accent)';
+        el.innerHTML = '<span style="font-size:10px; color:black; display:block; padding-top:5px">⚠️</span>';
+        
+        hazardsFound++;
+        document.getElementById('hunt-status').innerText = `Found: ${hazardsFound}/3 (${name} Detected)`;
+        
+        if(hazardsFound === 3) {
+            document.getElementById('hunt-status').innerHTML += " <strong style='color:green'> - ALL CLEAR</strong>";
+        }
+    }
+
+    // --- GAME 2: PRESSURE BLEED ---
+    let psi = 2000;
+    let bleedInterval;
+    
+    function startBleed() {
+        if(psi <= 0) return;
+        bleedInterval = setInterval(() => {
+            psi -= 50; // Drain speed
+            if(psi < 0) psi = 0;
+            
+            // Update Visuals
+            let pct = (psi / 2000) * 100;
+            document.getElementById('pressure-fill').style.width = pct + "%";
+            document.getElementById('psi-display').innerText = psi + " PSI";
+
+            if(psi === 0) {
+                clearInterval(bleedInterval);
+                document.getElementById('pressure-fill').style.background = "#28a745"; // Green
+                document.getElementById('bleed-result').innerHTML = "<strong style='color:green'>SAFE. Pressure Dissipated.</strong>";
+            }
+        }, 50);
+    }
+
+    function stopBleed() {
+        clearInterval(bleedInterval);
+        if(psi > 0) {
+            document.getElementById('bleed-result').innerText = "Warning: Residual Pressure Remaining!";
+            document.getElementById('bleed-result').style.color = "red";
+        }
+    }
+
+    // --- GAME 3: GRAVITY CHECK ---
+    function checkGravity(isSafeAction) {
+        const res = document.getElementById('gravity-result');
+        const status = document.getElementById('ram-status');
+        
+        if(isSafeAction) {
+            res.innerHTML = "<strong style='color:green'>CORRECT.</strong> You inserted blocks. Mechanical energy is now neutralized.";
+            status.innerText = "STATUS: BLOCKED (SAFE)";
+            status.style.color = "green";
+        } else {
+            res.innerHTML = "<strong style='color:red'>UNSAFE ACT.</strong> Gravity is a form of stored energy. The ram could fall.";
+        }
+    }
+
+    // --- MODULE 3: QUIZ ---
+    function gradeQuiz() {
+        const form = document.getElementById('quiz-form');
+        let score = 0;
+        let total = 5;
+
+        // Check Q1-Q5
+        for(let i=1; i<=5; i++) {
+            let val = form['q'+i].value;
+            if(val === '1') score++;
+        }
+
+        const resultDiv = document.getElementById('quiz-results');
+        let color = score === 5 ? "green" : "red";
+        resultDiv.style.color = color;
+        resultDiv.innerText = `You scored ${score} / ${total}`;
+        
+        if(score === 5) {
+            resultDiv.innerHTML += "<br>🎉 CERTIFICATE: ZES QUALIFIED";
+        } else {
+            resultDiv.innerHTML += "<br>Review the material and try again.";
+        }
+    }
+</script>
+
+</body>
+</html>
