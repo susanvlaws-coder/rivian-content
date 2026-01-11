@@ -30,6 +30,32 @@
                 overflow: hidden;
             }
 
+            /* --- NEW MENU BUTTON STYLES --- */
+            #top-nav {
+                position: absolute;
+                top: 20px;
+                left: 20px;
+                z-index: 1000; /* Ensures it sits above everything */
+            }
+
+            .home-btn {
+                color: #888;
+                text-decoration: none;
+                border: 1px solid #555;
+                padding: 8px 15px;
+                border-radius: 4px;
+                font-size: 0.9em;
+                transition: 0.2s;
+                background: #111; 
+            }
+
+            .home-btn:hover {
+                color: var(--safety-yellow);
+                border-color: var(--safety-yellow);
+                background: #444;
+            }
+            /* --------------------------- */
+
             /* Tablet Container */
             #app-container {
                 width: 960px;
@@ -211,6 +237,10 @@
         </style>
     </head>
     <body>
+        <div id="top-nav">
+            <a href="index.html" class="home-btn">&larr; Back to Menu</a>
+        </div>
+
         <div id="app-container">
             <header>
                 <div>PROTOCOL: <strong>LOTO-GEN-01</strong></div>
