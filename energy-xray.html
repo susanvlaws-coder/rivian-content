@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body { font-family: 'Roboto', sans-serif; background: #222; display: flex; justify-content: center; padding: 20px; }
+            .container { width: 100%; max-width: 700px; position: relative; }
+
+            /* The Machine Image Container */
+            .machine-view {
+              width: 100%; height: 400px;
+              background-color: #333; /* Replace with Image URL */
+              background-image: radial-gradient(circle, #444 10%, transparent 10%); /* Placeholder pattern */
+              background-size: 20px 20px;
+              border-radius: 8px;
+              position: relative;
+              overflow: hidden;
+              border: 2px solid #555;
+            }
+
+            /* The Overlays (Hidden by default) */
+            .overlay {
+              position: absolute; opacity: 0; transition: 0.5s;
+              display: flex; justify-content: center; align-items: center;
+              font-weight: bold; color: white; text-shadow: 0 1px 3px black;
+            }
+
+            /* Specific Energy Zones (Adjust these to fit your image) */
+            .electric {
+              top: 10%; left: 10%; width: 20%; height: 30%;
+              background: rgba(242, 197, 0, 0.6); box-shadow: 0 0 20px #F2C500; /* Yellow */
+            }
+            .pneumatic {
+              bottom: 20%; right: 20%; width: 60%; height: 10%;
+              background: rgba(52, 152, 219, 0.6); box-shadow: 0 0 20px #3498db; /* Blue */
+            }
+            .gravity {
+              top: 20%; right: 30%; width: 30%; height: 40%;
+              background: rgba(231, 76, 60, 0.6); box-shadow: 0 0 20px #e74c3c; /* Red */
+            }
+
+            /* Controls */
+            .controls { display: flex; gap: 10px; margin-top: 15px; justify-content: center; }
+            .toggle-btn {
+              background: #444; color: #ccc; border: 1px solid #555;
+              padding: 10px 20px; border-radius: 20px; cursor: pointer;
+              font-size: 0.9rem; transition: 0.3s;
+            }
+            .toggle-btn:hover { background: #555; }
+
+            /* Active States for Buttons */
+            .active-elec { background: #F2C500; color: #000; border-color: #F2C500; }
+            .active-pneu { background: #3498db; color: #fff; border-color: #3498db; }
+            .active-grav { background: #e74c3c; color: #fff; border-color: #e74c3c; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div style="color:white; margin-bottom:10px; text-align:center;">
+                <h3>ENERGY X-RAY</h3>
+                <p style="font-size:0.9rem; color:#aaa;">
+                    Toggle the filters to reveal invisible stored energy.
+                </p>
+            </div>
+
+            <div class="machine-view">
+                <div
+                    id="layer-elec"
+                    class="overlay electric"
+                >
+                    ⚡ ELECTRICAL (480V)
+                </div>
+                <div
+                    id="layer-pneu"
+                    class="overlay pneumatic"
+                >
+                    💨 PNEUMATIC (120 PSI)
+                </div>
+                <div
+                    id="layer-grav"
+                    class="overlay gravity"
+                >
+                    ⚙️ GRAVITY (Suspended Load)
+                </div>
+            </div>
+
+            <div class="controls">
+                <button
+                    class="toggle-btn"
+                    onclick="toggle('elec', this)"
+                >
+                    Show Electrical
+                </button>
+                <button
+                    class="toggle-btn"
+                    onclick="toggle('pneu', this)"
+                >
+                    Show Pneumatic
+                </button>
+                <button
+                    class="toggle-btn"
+                    onclick="toggle('grav', this)"
+                >
+                    Show Gravity
+                </button>
+            </div>
+        </div>
+
+        <script>
+            function toggle(type, btn) {
+              const layer = document.getElementById('layer-' + type);
+
+              // Toggle Opacity
+              if (layer.style.opacity == 1) {
+                layer.style.opacity = 0;
+                btn.classList.remove('active-' + type);
+              } else {
+                layer.style.opacity = 1;
+                btn.classList.add('active-' + type);
+              }
+            }
+        </script>
+    </body>
+</html>
