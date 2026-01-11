@@ -2,8 +2,36 @@
 <html>
     <head>
         <style>
+            /* --- BACK TO MENU BUTTON --- */
+        #top-nav {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 9999; /* High z-index ensures it sits on top of everything */
+        }
+
+        .home-btn {
+            color: #888;
+            text-decoration: none;
+            border: 1px solid #555;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: sans-serif;
+            transition: 0.2s;
+            background: #111; 
+        }
+
+        .home-btn:hover {
+            color: #FFD700; /* Safety Yellow */
+            border-color: #FFD700;
+            background: #444;
+        }
             body { font-family: 'Roboto', sans-serif; background: #222; display: flex; justify-content: center; padding: 20px; }
             .container { width: 100%; max-width: 700px; position: relative; }
+            <div id="top-nav">
+        <a href="index.html" class="home-btn">&larr; Back to Menu</a>
+    </div>
 
             /* The Machine Image Container */
             .machine-view {
