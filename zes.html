@@ -6,8 +6,8 @@
     <title>Microlearning: Zero Energy State</title>
     <style>
         :root {
-            --primary: #0056b3; /* Corporate Blue */
-            --accent: #FFD700; /* Safety Yellow */
+            --primary: #0056b3; 
+            --accent: #FFD700; 
             --text: #333;
             --bg: #f4f4f4;
             --success: #28a745;
@@ -25,15 +25,30 @@
             min-height: 100vh;
         }
 
-        /* NAVIGATION & LAYOUT */
-        header {
+        /* NAVIGATION BAR */
+        nav {
             background-color: #222;
-            color: white;
             width: 100%;
-            padding: 15px 0;
-            text-align: center;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-sizing: border-box;
         }
+
+        .home-btn {
+            text-decoration: none;
+            color: #ddd;
+            font-weight: bold;
+            border: 1px solid #555;
+            padding: 5px 15px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            margin-right: 20px;
+        }
+        .home-btn:hover { background: #444; color: white; border-color: var(--accent); }
+
+        h1 { color: white; margin: 0; font-size: 1.2rem; }
 
         .container {
             width: 90%;
@@ -66,7 +81,8 @@
         }
 
         .section { display: none; }
-        .section.active { display: block; fade-in: 0.5s; }
+        .section.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* BUTTONS */
         .btn {
@@ -81,6 +97,7 @@
         }
         .btn:hover { opacity: 0.9; }
         .btn-next { float: right; }
+        .btn-restart { background-color: #666; margin-top: 20px; }
         
         /* MODULE 1 STYLES */
         .energy-card {
@@ -115,12 +132,12 @@
             position: absolute;
             width: 30px;
             height: 30px;
-            background: rgba(255, 215, 0, 0.3); /* Hidden yellow */
+            background: rgba(255, 215, 0, 0.3);
             border-radius: 50%;
             cursor: pointer;
             border: 2px dashed var(--accent);
         }
-        .hazard.found { background: var(--accent); }
+        .hazard.found { background: var(--accent); border-style: solid; }
 
         /* Game 2: Bleed Valve */
         #pressure-gauge {
@@ -131,7 +148,7 @@
             position: relative;
         }
         #pressure-fill {
-            width: 100%; /* Start full */
+            width: 100%;
             height: 100%;
             background: var(--danger);
             transition: width 0.2s linear;
@@ -159,9 +176,10 @@
 </head>
 <body>
 
-<header>
-    <h1>Zero Energy State (ZES) Training</h1>
-</header>
+<nav>
+    <a href="index.html" class="home-btn">&larr; Main Menu</a>
+    <h1>Zero Energy State (ZES)</h1>
+</nav>
 
 <div class="container">
     <div class="nav-pills">
@@ -215,7 +233,7 @@
 
         <div class="game-box">
             <h3>2. The Pressure Bleed</h3>
-            <p><strong>Hold down</strong> the "OPEN VALVE" button to drain the hydraulic line. <br>Release exactly when it hits 0 PSI. Do not release early!</p>
+            <p><strong>Hold down</strong> the "OPEN VALVE" button to drain the hydraulic line. <br>Release exactly when it hits 0 PSI.</p>
             <div id="pressure-gauge"><div id="pressure-fill"></div></div>
             <h4 id="psi-display">2000 PSI</h4>
             <button id="bleed-btn" class="btn" onmousedown="startBleed()" onmouseup="stopBleed()" onmouseleave="stopBleed()">HOLD TO OPEN VALVE</button>
@@ -245,7 +263,6 @@
                     <label><input type="radio" name="q1" value="0"> When the emergency stop is pressed.</label>
                 </div>
             </div>
-
             <div class="question-block">
                 <p><strong>2. Which is an example of "Potential Energy" in a machine?</strong></p>
                 <div class="options">
@@ -254,7 +271,6 @@
                     <label><input type="radio" name="q2" value="0"> A hot pipe.</label>
                 </div>
             </div>
-
             <div class="question-block">
                 <p><strong>3. After locking out electrical power, you notice the pressure gauge reads 50 PSI. Can you work?</strong></p>
                 <div class="options">
@@ -263,7 +279,6 @@
                     <label><input type="radio" name="q3" value="0"> Yes, if you wear gloves.</label>
                 </div>
             </div>
-
             <div class="question-block">
                 <p><strong>4. How do you treat a tensioned spring during ZES?</strong></p>
                 <div class="options">
@@ -272,7 +287,6 @@
                     <label><input type="radio" name="q4" value="1"> Block it or release the tension.</label>
                 </div>
             </div>
-
             <div class="question-block">
                 <p><strong>5. When is the ZES procedure complete?</strong></p>
                 <div class="options">
@@ -285,6 +299,8 @@
             <button type="button" class="btn" onclick="gradeQuiz()">Submit Exam</button>
         </form>
         <div id="quiz-results" style="margin-top:20px; font-weight:bold; font-size:1.2em;"></div>
+        
+        <button id="restart-btn" class="btn btn-restart" style="display:none" onclick="restartCourse()">&#8634; Restart Course</button>
     </div>
 </div>
 
@@ -296,24 +312,55 @@
         
         document.getElementById(id).classList.add('active');
         
-        // Highlight tab
         if(id === 'mod1') document.querySelectorAll('.nav-item')[0].classList.add('active');
         if(id === 'mod2') document.querySelectorAll('.nav-item')[1].classList.add('active');
         if(id === 'mod3') document.querySelectorAll('.nav-item')[2].classList.add('active');
+    }
+
+    // --- RESTART LOGIC ---
+    function restartCourse() {
+        // Reset Variables
+        hazardsFound = 0;
+        psi = 2000;
+        
+        // Reset Game 1 (Hazards)
+        document.querySelectorAll('.hazard').forEach(el => {
+            el.classList.remove('found');
+            el.innerHTML = '';
+            el.style.backgroundColor = 'rgba(255, 215, 0, 0.3)';
+        });
+        document.getElementById('hunt-status').innerText = "Found: 0/3";
+
+        // Reset Game 2 (Pressure)
+        document.getElementById('pressure-fill').style.width = "100%";
+        document.getElementById('pressure-fill').style.backgroundColor = "var(--danger)";
+        document.getElementById('psi-display').innerText = "2000 PSI";
+        document.getElementById('bleed-result').innerText = "";
+
+        // Reset Game 3 (Gravity)
+        document.getElementById('ram-status').innerText = "STATUS: SUSPENDED (DANGER)";
+        document.getElementById('ram-status').style.color = "var(--danger)";
+        document.getElementById('gravity-result').innerText = "";
+
+        // Reset Quiz
+        document.getElementById('quiz-form').reset();
+        document.getElementById('quiz-results').innerText = "";
+        document.getElementById('restart-btn').style.display = "none";
+
+        // Go to start
+        showSection('mod1');
+        window.scrollTo(0,0);
     }
 
     // --- GAME 1: ENERGY HUNT ---
     let hazardsFound = 0;
     function foundHazard(el, name) {
         if(el.classList.contains('found')) return;
-        
         el.classList.add('found');
         el.style.backgroundColor = 'var(--accent)';
         el.innerHTML = '<span style="font-size:10px; color:black; display:block; padding-top:5px">⚠️</span>';
-        
         hazardsFound++;
         document.getElementById('hunt-status').innerText = `Found: ${hazardsFound}/3 (${name} Detected)`;
-        
         if(hazardsFound === 3) {
             document.getElementById('hunt-status').innerHTML += " <strong style='color:green'> - ALL CLEAR</strong>";
         }
@@ -322,26 +369,21 @@
     // --- GAME 2: PRESSURE BLEED ---
     let psi = 2000;
     let bleedInterval;
-    
     function startBleed() {
         if(psi <= 0) return;
         bleedInterval = setInterval(() => {
-            psi -= 50; // Drain speed
+            psi -= 50;
             if(psi < 0) psi = 0;
-            
-            // Update Visuals
             let pct = (psi / 2000) * 100;
             document.getElementById('pressure-fill').style.width = pct + "%";
             document.getElementById('psi-display').innerText = psi + " PSI";
-
             if(psi === 0) {
                 clearInterval(bleedInterval);
-                document.getElementById('pressure-fill').style.background = "#28a745"; // Green
+                document.getElementById('pressure-fill').style.background = "#28a745";
                 document.getElementById('bleed-result').innerHTML = "<strong style='color:green'>SAFE. Pressure Dissipated.</strong>";
             }
         }, 50);
     }
-
     function stopBleed() {
         clearInterval(bleedInterval);
         if(psi > 0) {
@@ -354,13 +396,12 @@
     function checkGravity(isSafeAction) {
         const res = document.getElementById('gravity-result');
         const status = document.getElementById('ram-status');
-        
         if(isSafeAction) {
-            res.innerHTML = "<strong style='color:green'>CORRECT.</strong> You inserted blocks. Mechanical energy is now neutralized.";
+            res.innerHTML = "<strong style='color:green'>CORRECT.</strong> You inserted blocks.";
             status.innerText = "STATUS: BLOCKED (SAFE)";
             status.style.color = "green";
         } else {
-            res.innerHTML = "<strong style='color:red'>UNSAFE ACT.</strong> Gravity is a form of stored energy. The ram could fall.";
+            res.innerHTML = "<strong style='color:red'>UNSAFE ACT.</strong> Gravity is stored energy.";
         }
     }
 
@@ -369,23 +410,20 @@
         const form = document.getElementById('quiz-form');
         let score = 0;
         let total = 5;
-
-        // Check Q1-Q5
         for(let i=1; i<=5; i++) {
             let val = form['q'+i].value;
             if(val === '1') score++;
         }
-
         const resultDiv = document.getElementById('quiz-results');
         let color = score === 5 ? "green" : "red";
         resultDiv.style.color = color;
         resultDiv.innerText = `You scored ${score} / ${total}`;
-        
         if(score === 5) {
             resultDiv.innerHTML += "<br>🎉 CERTIFICATE: ZES QUALIFIED";
         } else {
             resultDiv.innerHTML += "<br>Review the material and try again.";
         }
+        document.getElementById('restart-btn').style.display = "inline-block";
     }
 </script>
 
