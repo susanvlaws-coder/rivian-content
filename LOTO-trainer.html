@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LOTO Safety Trainer</title>
+    <title>LOTO Safety Trainer - High Score Edition</title>
     <style>
         :root {
             --safety-yellow: #FFD700;
@@ -21,7 +21,25 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            flex-direction: column;
         }
+
+        /* NEW MENU BAR */
+        #top-nav {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+        .home-btn {
+            color: #888;
+            text-decoration: none;
+            border: 1px solid #555;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            transition: 0.2s;
+        }
+        .home-btn:hover { color: var(--safety-yellow); border-color: var(--safety-yellow); }
 
         #game-container {
             width: 600px;
@@ -32,7 +50,6 @@
             position: relative;
         }
 
-        /* Header & Timer */
         header {
             border-bottom: 2px solid #555;
             padding-bottom: 10px;
@@ -42,13 +59,15 @@
             align-items: center;
         }
 
+        .stats-box { text-align: right; font-size: 0.9em; }
+        #best-time { color: var(--safety-yellow); font-weight: bold; }
+
         #timer-bar-container {
             width: 100%;
             height: 10px;
             background-color: #555;
             margin-top: 10px;
         }
-
         #timer-bar {
             width: 100%;
             height: 100%;
@@ -56,7 +75,6 @@
             transition: width 1s linear;
         }
 
-        /* Game Area */
         #message-box {
             min-height: 60px;
             margin-bottom: 20px;
@@ -77,18 +95,9 @@
             text-align: left;
             transition: all 0.2s;
         }
+        .action-btn:hover { background-color: #555; border-color: var(--safety-yellow); }
 
-        .action-btn:hover {
-            background-color: #555;
-            border-color: var(--safety-yellow);
-        }
-
-        .action-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Quiz Overlay */
+        /* Quiz Modal */
         #quiz-modal {
             display: none;
             position: absolute;
@@ -98,7 +107,6 @@
             padding: 40px;
             text-align: center;
         }
-        
         #quiz-options button {
             background: var(--safety-yellow);
             color: black;
@@ -107,31 +115,32 @@
             width: 80%;
         }
 
-        /* Status Classes */
         .shake { animation: shake 0.5s; border-color: var(--alert-red) !important; }
         @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } 100% { transform: translateX(0); } }
-        
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
+<div id="top-nav">
+    <a href="index.html" class="home-btn">&larr; Back to Menu</a>
+</div>
+
 <div id="game-container">
     <header>
-        <h2 style="margin:0; color:var(--safety-yellow);">LOTO TRAINER</h2>
-        <div id="step-counter">Step: 1/6</div>
+        <div>
+            <h2 style="margin:0; color:var(--safety-yellow);">LOTO TRAINER</h2>
+            <small style="color:#aaa">Time Attack Mode</small>
+        </div>
+        <div class="stats-box">
+            <div id="step-counter">Step: 1/6</div>
+            <div id="best-time">Best Time: --</div>
+        </div>
     </header>
     
-    <div id="timer-bar-container">
-        <div id="timer-bar"></div>
-    </div>
-
-    <div id="message-box">
-        Initialize Procedure... Identify the first step.
-    </div>
-
-    <div id="actions-list">
-        </div>
+    <div id="timer-bar-container"><div id="timer-bar"></div></div>
+    <div id="message-box">Initialize Procedure... Identify the first step.</div>
+    <div id="actions-list"></div>
 
     <div id="restart-btn" class="hidden">
         <button class="action-btn" style="background:var(--alert-red); font-weight:bold;" onclick="restartGame()">RESTART AUDIT</button>
@@ -144,17 +153,11 @@
 </div>
 
 <script>
-    // --- GAME DATA ---
-    const TIME_LIMIT = 45; // Seconds
+    const TIME_LIMIT = 45; 
     const CORRECT_ORDER = [
-        "Notify Affected Employees",
-        "Perform Machine Shutdown",
-        "Isolate Energy Sources (Disconnect)",
-        "Apply Lock and Tag Devices",
-        "Release/Dissipate Stored Energy",
-        "Verify Isolation (The 'Try' Step)"
+        "Notify Affected Employees", "Perform Machine Shutdown", "Isolate Energy Sources (Disconnect)",
+        "Apply Lock and Tag Devices", "Release/Dissipate Stored Energy", "Verify Isolation (The 'Try' Step)"
     ];
-
     const QUIZZES = {
         0: { q: "Who is the primary person responsible for the LOTO?", opts: ["Shift Supervisor", "Authorized Employee", "Safety Manager"], ans: 1 },
         2: { q: "Is pushing an E-Stop sufficient for isolation?", opts: ["Yes", "No", "Only for short tasks"], ans: 1 },
@@ -162,18 +165,20 @@
         5: { q: "After verifying (Trying), what must you do with the Start button?", opts: ["Return to OFF", "Leave ON", "Tape it over"], ans: 0 }
     };
 
-    // --- STATE ---
     let currentStepIndex = 0;
     let timeLeft = TIME_LIMIT;
     let timerInterval = null;
     let isQuizActive = false;
+    let startTimeValue = 0;
 
-    // --- INIT ---
     function initGame() {
         currentStepIndex = 0;
         timeLeft = TIME_LIMIT;
         isQuizActive = false;
         
+        const bestTime = localStorage.getItem('loto_best_time');
+        document.getElementById('best-time').innerText = bestTime ? `Best Time: ${bestTime}s` : "Best Time: --";
+
         document.getElementById('message-box').innerText = "Review the scene. Select the first procedure step.";
         document.getElementById('message-box').style.color = "white";
         document.getElementById('restart-btn').classList.add('hidden');
@@ -187,11 +192,8 @@
     function renderButtons() {
         const list = document.getElementById('actions-list');
         list.innerHTML = "";
-        
-        // Shuffle options for difficulty
         let options = [...CORRECT_ORDER];
         options.sort(() => Math.random() - 0.5);
-
         options.forEach(opt => {
             let btn = document.createElement('button');
             btn.className = 'action-btn';
@@ -199,55 +201,42 @@
             btn.onclick = () => handleAction(opt);
             list.appendChild(btn);
         });
-        
         document.getElementById('step-counter').innerText = `Step: ${currentStepIndex + 1}/6`;
     }
 
-    // --- LOGIC ---
     function startTimer() {
         clearInterval(timerInterval);
         document.getElementById('timer-bar').style.width = '100%';
-        
+        startTimeValue = Date.now();
         timerInterval = setInterval(() => {
-            if(isQuizActive) return; // Pause timer during quiz? Optional. Let's keep it running for pressure.
-
-            timeLeft--;
+            if(isQuizActive) return; 
+            let elapsed = (Date.now() - startTimeValue) / 1000;
+            timeLeft = TIME_LIMIT - elapsed;
             const pct = (timeLeft / TIME_LIMIT) * 100;
             document.getElementById('timer-bar').style.width = `${pct}%`;
-
-            if (timeLeft <= 0) {
-                failGame("TIMEOUT: You hesitated too long during an emergency procedure.");
-            }
-        }, 1000);
+            if (timeLeft <= 0) failGame("TIMEOUT: You hesitated too long during an emergency procedure.");
+        }, 100);
     }
 
     function handleAction(selectedAction) {
         if (timeLeft <= 0) return;
-
         const requiredAction = CORRECT_ORDER[currentStepIndex];
-
         if (selectedAction === requiredAction) {
-            // Correct Step
-            if (QUIZZES[currentStepIndex]) {
-                triggerQuiz(currentStepIndex);
-            } else {
-                advanceStep();
-            }
+            if (QUIZZES[currentStepIndex]) triggerQuiz(currentStepIndex);
+            else advanceStep();
         } else {
-            // Wrong Step
             failGame(`SEQUENCE ERROR: You attempted '${selectedAction}' but '${requiredAction}' was required.`);
         }
     }
 
     function advanceStep() {
         currentStepIndex++;
-        if (currentStepIndex >= CORRECT_ORDER.length) {
-            winGame();
-        } else {
+        if (currentStepIndex >= CORRECT_ORDER.length) winGame();
+        else {
             renderButtons();
             const msg = document.getElementById('message-box');
             msg.innerText = "Correct. Proceed to next step.";
-            msg.style.color = "#28a745"; // Green text flash
+            msg.style.color = "#28a745"; 
             setTimeout(() => msg.style.color = "white", 500);
         }
     }
@@ -258,11 +247,10 @@
         const modal = document.getElementById('quiz-modal');
         const qText = document.getElementById('quiz-question');
         const qOpts = document.getElementById('quiz-options');
-
         qText.innerText = `COMPLIANCE CHECK: ${data.q}`;
         qOpts.innerHTML = "";
         modal.style.display = "block";
-
+        
         data.opts.forEach((opt, i) => {
             let btn = document.createElement('button');
             btn.className = 'action-btn';
@@ -283,30 +271,26 @@
 
     function failGame(reason) {
         clearInterval(timerInterval);
-        const container = document.getElementById('game-container');
-        const msg = document.getElementById('message-box');
-        
-        container.classList.add('shake');
-        msg.innerHTML = `<strong style="color:var(--alert-red)">AUDIT FAILED</strong><br>${reason}`;
-        
+        document.getElementById('game-container').classList.add('shake');
+        document.getElementById('message-box').innerHTML = `<strong style="color:var(--alert-red)">AUDIT FAILED</strong><br>${reason}`;
         document.getElementById('actions-list').classList.add('hidden');
         document.getElementById('restart-btn').classList.remove('hidden');
     }
 
     function winGame() {
         clearInterval(timerInterval);
-        const msg = document.getElementById('message-box');
-        msg.innerHTML = `<strong style="color:var(--success-green)">PROCEDURE VERIFIED</strong><br>The machine is safely locked out. Zero energy confirmed.`;
+        let finalTime = (TIME_LIMIT - timeLeft).toFixed(2);
+        let previousBest = localStorage.getItem('loto_best_time');
+        if (!previousBest || parseFloat(finalTime) < parseFloat(previousBest)) {
+            localStorage.setItem('loto_best_time', finalTime);
+            document.getElementById('best-time').innerText = `Best Time: ${finalTime}s`;
+        }
+        document.getElementById('message-box').innerHTML = `<strong style="color:var(--success-green)">PROCEDURE VERIFIED</strong><br>Time: ${finalTime}s`;
         document.getElementById('actions-list').innerHTML = "<h3 style='text-align:center; color:#28a745'>CERTIFIED</h3>";
     }
 
-    function restartGame() {
-        initGame();
-    }
-
-    // Start on load
+    function restartGame() { initGame(); }
     initGame();
 </script>
-
 </body>
 </html>
