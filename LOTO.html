@@ -1,288 +1,512 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LOTO Safety Trainer - Basic</title>
-    <style>
-        :root {
-            --safety-yellow: #FFD700;
-            --safety-black: #1a1a1a;
-            --alert-red: #ff4444;
-            --success-green: #28a745;
-        }
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+        />
+        <title>LOTO Verification Protocol</title>
+        <style>
+            /* --- RIVIAN-INSPIRED INDUSTRIAL CSS --- */
+            :root {
+                --safety-yellow: #F2C500;
+                --alert-red: #E03C31;
+                --industrial-grey: #2C3E50;
+                --bg-dark: #1a1a1a;
+                --text-light: #ecf0f1;
+            }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #333;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            flex-direction: column;
-        }
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: #000;
+                font-family: 'Roboto', 'Segoe UI', sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                color: var(--text-light);
+                overflow: hidden;
+            }
 
-        /* NEW MENU BAR */
-        #top-nav {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-        }
+            /* Tablet Container */
+            #app-container {
+                width: 960px;
+                height: 600px;
+                background-color: var(--bg-dark);
+                border: 3px solid #333;
+                border-radius: 12px;
+                box-shadow: 0 0 40px rgba(0,0,0,0.8);
+                overflow: hidden;
+                position: relative;
+            }
 
-        .home-btn {
-            color: #888;
-            text-decoration: none;
-            border: 1px solid #555;
-            padding: 8px 15px;
-            border-radius: 4px;
-            font-size: 0.9em;
-            transition: 0.2s;
-        }
+            /* Header & Progress */
+            header {
+                background: #111;
+                padding: 15px 30px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 2px solid var(--safety-yellow);
+                height: 50px;
+                box-sizing: border-box;
+            }
 
-        .home-btn:hover {
-            color: var(--safety-yellow);
-            border-color: var(--safety-yellow);
-        }
+            .progress-track {
+                display: flex;
+                gap: 10px;
+            }
+            .step-dot {
+                height: 12px; width: 12px;
+                background: #444; border-radius: 50%;
+            }
+            .step-dot.active { background: var(--safety-yellow); box-shadow: 0 0 8px var(--safety-yellow); }
 
-        /* GAME CONTAINER */
-        #game-container {
-            width: 600px;
-            background-color: var(--safety-black);
-            border: 4px solid var(--safety-yellow);
-            padding: 20px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            position: relative;
-        }
+            /* Screens */
+            .screen {
+                display: none;
+                padding: 40px;
+                height: calc(100% - 50px);
+                box-sizing: border-box;
+                flex-direction: column;
+            }
+            .screen.active { display: flex; animation: fadeIn 0.5s; }
+            @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
 
-        /* HEADER */
-        header {
-            border-bottom: 2px solid #555;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+            h1 { margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
+            p.instruction { font-size: 1.2rem; color: #aaa; margin-bottom: 20px; }
 
-        /* MESSAGE AREA */
-        #message-box {
-            min-height: 60px;
-            margin-bottom: 20px;
-            padding: 10px;
-            background: #2a2a2a;
-            border-left: 4px solid #555;
-        }
+            /* Buttons */
+            .btn-next {
+                margin-top: auto;
+                padding: 15px 40px;
+                background: var(--safety-yellow);
+                color: #000;
+                border: none;
+                font-size: 1.1rem;
+                font-weight: bold;
+                text-transform: uppercase;
+                cursor: pointer;
+                align-self: flex-end;
+                border-radius: 4px;
+                transition: 0.3s;
+            }
+            .btn-next:disabled { background: #444; color: #888; cursor: not-allowed; }
+            .btn-next:hover:not(:disabled) { background: #d4ac00; }
 
-        /* BUTTONS */
-        .action-btn {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            background-color: #444;
-            color: white;
-            border: 1px solid #666;
-            cursor: pointer;
-            text-align: left;
-            transition: all 0.2s;
-        }
+            /* --- SCREEN 1: IDENTIFY (Hotspots) --- */
+            .machine-diagram {
+                position: relative;
+                width: 600px;
+                height: 280px;
+                background: #333;
+                margin: 0 auto;
+                border-radius: 8px;
+                /* Placeholder pattern for the machine */
+                background-image: radial-gradient(circle at 30% 40%, #444 10px, transparent 11px), radial-gradient(circle at 70% 60%, #444 15px, transparent 16px); background-size: 50px 50px;
+            }
+            .hotspot {
+                position: absolute;
+                width: 60px; height: 60px;
+                border: 3px solid var(--safety-yellow);
+                border-radius: 50%;
+                cursor: pointer;
+                display: flex; justify-content: center; align-items: center;
+                font-size: 24px;
+                animation: pulse 2s infinite;
+                transition: 0.3s;
+                background: rgba(0,0,0,0.5);
+                z-index: 10;
+            }
+            .hotspot.found {
+                background: var(--safety-yellow);
+                color: #000;
+                animation: none;
+                border-color: #fff;
+            }
+            @keyframes pulse { 0% {box-shadow: 0 0 0 0px rgba(242, 197, 0, 0.7);} 100% {box-shadow: 0 0 0 20px rgba(242, 197, 0, 0);} }
 
-        .action-btn:hover {
-            background-color: #555;
-            border-color: var(--safety-yellow);
-        }
+            /* New Feedback Bar for Screen 1 */
+            .info-feedback-bar {
+                height: 40px;
+                margin-top: 15px;
+                text-align: center;
+                font-weight: bold;
+                font-size: 1.2rem;
+                color: var(--safety-yellow);
+                letter-spacing: 1px;
+                background: #222;
+                display: flex; justify-content: center; align-items: center;
+                border-radius: 4px;
+                border: 1px solid #444;
+            }
 
-        /* QUIZ MODAL */
-        #quiz-modal {
-            display: none;
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.95);
-            z-index: 10;
-            padding: 40px;
-            text-align: center;
-        }
-        
-        #quiz-options button {
-            background: var(--safety-yellow);
-            color: black;
-            font-weight: bold;
-            margin: 10px;
-            width: 80%;
-        }
+            /* --- SCREEN 2: ISOLATE (Drag & Drop) --- */
+            .dnd-container { display: flex; justify-content: space-between; height: 300px; }
+            .toolbox {
+                width: 30%; background: #222; padding: 20px; border-radius: 8px;
+                display: flex; flex-direction: column; gap: 20px;
+            }
+            .draggable {
+                background: #444; padding: 15px; border-radius: 8px; cursor: grab;
+                display: flex; align-items: center; gap: 10px; font-weight: bold;
+                border: 2px solid transparent;
+            }
+            .draggable:active { cursor: grabbing; }
 
-        /* UTILS */
-        .shake { animation: shake 0.5s; border-color: var(--alert-red) !important; }
-        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } 100% { transform: translateX(0); } }
-        
-        .hidden { display: none; }
-    </style>
-</head>
-<body>
+            .breaker-panel {
+                width: 60%; background: #2a2a2a; border-radius: 8px;
+                display: flex; justify-content: center; align-items: center;
+                border: 3px dashed #555; position: relative;
+            }
+            .breaker-switch {
+                width: 100px; height: 180px; background: #111; border: 4px solid #555;
+                position: relative; display: flex; justify-content: center; align-items: center;
+                flex-direction: column;
+            }
+            .switch-handle { width: 20px; height: 80px; background: var(--alert-red); margin-bottom: 20px; transition: 0.3s; }
+            .breaker-panel.locked .switch-handle { background: #555; transform: translateY(20px); }
 
-<div id="top-nav">
-    <a href="index.html" class="home-btn">&larr; Back to Menu</a>
-</div>
+            .applied-lock, .applied-tag { position: absolute; font-size: 40px; }
+            .applied-lock { top: 50px; z-index: 2; }
+            .applied-tag { top: 80px; left: 60px; z-index: 3; transform: rotate(-10deg); }
 
-<div id="game-container">
-    <header>
-        <h2 style="margin:0; color:var(--safety-yellow);">LOTO TRAINER</h2>
-        <div id="step-counter">Step: 1/6</div>
-    </header>
-    
-    <div id="message-box">
-        Initialize Procedure... Identify the first step.
-    </div>
+            #dnd-feedback { height: 30px; color: var(--alert-red); font-weight: bold; }
 
-    <div id="actions-list">
+            /* --- SCREEN 3: TRY (Decisions) --- */
+            .decision-container {
+                display: flex; gap: 30px; justify-content: center; margin-top: 50px;
+            }
+            .decision-btn {
+                padding: 30px;
+                width: 300px;
+                border: 3px solid #555;
+                background: transparent;
+                color: #fff;
+                font-size: 1.5rem;
+                cursor: pointer;
+                border-radius: 8px;
+                transition: 0.3s;
+            }
+            .decision-btn:hover { background: #333; border-color: #777; }
+            .btn-danger:hover { background: var(--alert-red); border-color: var(--alert-red); color: #000; }
+            .btn-safe { background: var(--safety-yellow); color: #000; border: none; }
+            .btn-safe:hover { background: #d4ac00; }
+
+            /* Results */
+            .result-screen {
+                text-align: center;
+                justify-content: space-around;
+                align-items: center;
+            }
+            .result-screen .btn-next {
+                align-self: center;
+                margin-bottom: 20px;
+            }
+            .result-icon { font-size: 100px; margin-bottom: 20px; margin-top: 20px; }
+            .fail-text { color: var(--alert-red); }
+            .success-text { color: var(--safety-yellow); }
+        </style>
+    </head>
+    <body>
+        <div id="app-container">
+            <header>
+                <div>PROTOCOL: <strong>LOTO-GEN-01</strong></div>
+                <div class="progress-track">
+                    <div
+                        class="step-dot active"
+                        id="dot1"
+                    ></div>
+                    <div
+                        class="step-dot"
+                        id="dot2"
+                    ></div>
+                    <div
+                        class="step-dot"
+                        id="dot3"
+                    ></div>
+                </div>
+            </header>
+
+            <div
+                class="screen active"
+                id="screen1"
+            >
+                <h1>Step 1: Identification</h1>
+                <p class="instruction">
+                    Tap to identify ALL 3 hazardous energy sources on this
+                    hydraulic press.
+                </p>
+
+                <div class="machine-diagram">
+                    <div
+                        class="hotspot"
+                        style="top: 20px; left: 50px;"
+                        data-info="FOUND: 480V Electrical Feed"
+                        onclick="findSource(this)"
+                    >
+                        ⚡️
+                    </div>
+
+                    <div
+                        class="hotspot"
+                        style="top: 150px; right: 80px;"
+                        data-info="FOUND: Pneumatic Pressure (120 PSI)"
+                        onclick="findSource(this)"
+                    >
+                        💨
+                    </div>
+
+                    <div
+                        class="hotspot"
+                        style="bottom: 40px; left: 250px;"
+                        data-info="FOUND: Gravity/Kinetic Hazard (Ram)"
+                        onclick="findSource(this)"
+                    >
+                        ⚙️
+                    </div>
+                </div>
+
+                <div
+                    id="source-feedback-display"
+                    class="info-feedback-bar"
+                >
+                    Tap an icon to scan...
+                </div>
+
+                <div style="text-align: center; margin-top: 10px; color: #888;">
+                    Sources Found: <span id="source-count">0</span>/3
+                </div>
+
+                <button
+                    class="btn-next"
+                    id="btnS1"
+                    disabled
+                    onclick="nextScreen(2)"
+                >
+                    Confirm Sources >
+                </button>
+            </div>
+
+            <div
+                class="screen"
+                id="screen2"
+            >
+                <h1>Step 2: Isolation & Locking</h1>
+                <p class="instruction">
+                    Perform the lockout procedure on the main breaker switch.
+                    Sequence matters.
+                </p>
+                <div id="dnd-feedback"></div>
+
+                <div class="dnd-container">
+                    <div class="toolbox">
+                        <h3>Toolbox</h3>
+                        <div
+                            class="draggable"
+                            draggable="true"
+                            ondragstart="drag(event)"
+                            id="drag-lock"
+                        >
+                            🔒 Safety Padlock
+                        </div>
+                        <div
+                            class="draggable"
+                            draggable="true"
+                            ondragstart="drag(event)"
+                            id="drag-tag"
+                        >
+                            🏷️ Danger Tag
+                        </div>
+                    </div>
+
+                    <div
+                        class="breaker-panel"
+                        ondrop="drop(event)"
+                        ondragover="allowDrop(event)"
+                    >
+                        <div
+                            class="breaker-switch"
+                            id="breakerSwitch"
+                        >
+                            <div class="switch-handle"></div>
+                            <span style="margin-top:10px; font-size:0.8rem;"
+                                >MAIN POWER</span
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <button
+                    class="btn-next"
+                    id="btnS2"
+                    disabled
+                    onclick="nextScreen(3)"
+                >
+                    Verification complete >
+                </button>
+            </div>
+
+            <div
+                class="screen"
+                id="screen3"
+            >
+                <h1>Step 3: Verification</h1>
+                <p
+                    class="instruction"
+                    style="font-size: 1.5rem; color: #fff;"
+                >
+                    You have locked and tagged the breaker.
+                </p>
+                <p class="instruction">What is your next immediate action?</p>
+
+                <div class="decision-container">
+                    <button
+                        class="decision-btn btn-danger"
+                        onclick="showResult('fail')"
+                    >
+                        Start maintenance work
+                    </button>
+                    <button
+                        class="decision-btn btn-safe"
+                        onclick="showResult('success')"
+                    >
+                        Attempt to start machine ("Try")
+                    </button>
+                </div>
+            </div>
+
+            <div
+                class="screen result-screen"
+                id="result-fail"
+            >
+                <div class="result-icon">☠️</div>
+                <h1 class="fail-text">FATAL ERROR</h1>
+                <p style="font-size: 1.3rem;">
+                    You failed to verify isolation. The machine had residual
+                    hydraulic pressure and cycled.
+                </p>
+                <p>
+                    Always perform the "TRY" step before entering the danger
+                    zone.
+                </p>
+                <button
+                    class="btn-next"
+                    onclick="location.reload()"
+                >
+                    Restart Protocol
+                </button>
+            </div>
+
+            <div
+                class="screen result-screen"
+                id="result-success"
+            >
+                <div class="result-icon">✅</div>
+                <h1 class="success-text">PROTOCOL COMPLETE</h1>
+                <p style="font-size: 1.3rem;">
+                    You successfully isolated the energy and verified a
+                    zero-energy state by attempting to start the machine.
+                </p>
+                <p>You are safe to begin work.</p>
+                <button
+                    class="btn-next"
+                    onclick="location.reload()"
+                >
+                    Restart Protocol
+                </button>
+            </div>
         </div>
 
-    <div id="restart-btn" class="hidden">
-        <button class="action-btn" style="background:var(--alert-red); font-weight:bold;" onclick="restartGame()">RESTART AUDIT</button>
-    </div>
+        <script>
+            /* --- JAVASCRIPT LOGIC --- */
+            let currentScreen = 1;
+            let sourcesFound = 0;
+            let isLocked = false;
+            let isTagged = false;
 
-    <div id="quiz-modal">
-        <h3 id="quiz-question" style="color:var(--safety-yellow)">Question Text</h3>
-        <div id="quiz-options"></div>
-    </div>
-</div>
-
-<script>
-    // --- GAME DATA ---
-    const CORRECT_ORDER = [
-        "Notify Affected Employees",
-        "Perform Machine Shutdown",
-        "Isolate Energy Sources (Disconnect)",
-        "Apply Lock and Tag Devices",
-        "Release/Dissipate Stored Energy",
-        "Verify Isolation (The 'Try' Step)"
-    ];
-
-    const QUIZZES = {
-        0: { q: "Who is the primary person responsible for the LOTO?", opts: ["Shift Supervisor", "Authorized Employee", "Safety Manager"], ans: 1 },
-        2: { q: "Is pushing an E-Stop sufficient for isolation?", opts: ["Yes", "No", "Only for short tasks"], ans: 1 },
-        3: { q: "What must be written on the LOTO Tag?", opts: ["Serial Number", "Name & Date", "Repair Time"], ans: 1 },
-        5: { q: "After verifying (Trying), what must you do with the Start button?", opts: ["Return to OFF", "Leave ON", "Tape it over"], ans: 0 }
-    };
-
-    // --- STATE ---
-    let currentStepIndex = 0;
-
-    // --- INIT ---
-    function initGame() {
-        currentStepIndex = 0;
-        
-        document.getElementById('message-box').innerText = "Review the scene. Select the first procedure step.";
-        document.getElementById('message-box').style.color = "white";
-        document.getElementById('restart-btn').classList.add('hidden');
-        document.getElementById('actions-list').classList.remove('hidden');
-        document.getElementById('game-container').classList.remove('shake');
-        
-        renderButtons();
-    }
-
-    function renderButtons() {
-        const list = document.getElementById('actions-list');
-        list.innerHTML = "";
-        
-        // Shuffle options for difficulty
-        let options = [...CORRECT_ORDER];
-        options.sort(() => Math.random() - 0.5);
-
-        options.forEach(opt => {
-            let btn = document.createElement('button');
-            btn.className = 'action-btn';
-            btn.innerText = opt;
-            btn.onclick = () => handleAction(opt);
-            list.appendChild(btn);
-        });
-        
-        document.getElementById('step-counter').innerText = `Step: ${currentStepIndex + 1}/6`;
-    }
-
-    // --- LOGIC ---
-    function handleAction(selectedAction) {
-        const requiredAction = CORRECT_ORDER[currentStepIndex];
-
-        if (selectedAction === requiredAction) {
-            // Correct Step
-            if (QUIZZES[currentStepIndex]) {
-                triggerQuiz(currentStepIndex);
-            } else {
-                advanceStep();
+            // Navigation
+            function nextScreen(num) {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById(`screen${num}`).classList.add('active');
+                document.querySelectorAll('.step-dot').forEach(d => d.classList.remove('active'));
+                document.getElementById(`dot${num}`).classList.add('active');
+                currentScreen = num;
             }
-        } else {
-            // Wrong Step
-            failGame(`SEQUENCE ERROR: You attempted '${selectedAction}' but '${requiredAction}' was required.`);
-        }
-    }
 
-    function advanceStep() {
-        currentStepIndex++;
-        if (currentStepIndex >= CORRECT_ORDER.length) {
-            winGame();
-        } else {
-            renderButtons();
-            const msg = document.getElementById('message-box');
-            msg.innerText = "Correct. Proceed to next step.";
-            msg.style.color = "#28a745"; // Green text flash
-            setTimeout(() => msg.style.color = "white", 500);
-        }
-    }
+            // --- LOGIC FOR SCREEN 1 (Identify) ---
+            function findSource(element) {
+                // Get the specific info from the data attribute
+                const info = element.getAttribute('data-info');
+                const display = document.getElementById('source-feedback-display');
 
-    function triggerQuiz(index) {
-        const data = QUIZZES[index];
-        const modal = document.getElementById('quiz-modal');
-        const qText = document.getElementById('quiz-question');
-        const qOpts = document.getElementById('quiz-options');
+                // Update the feedback bar
+                display.innerText = info;
+                display.style.color = "#fff"; // Flash white text on update
+                setTimeout(() => { display.style.color = "var(--safety-yellow)"; }, 200);
 
-        qText.innerText = `COMPLIANCE CHECK: ${data.q}`;
-        qOpts.innerHTML = "";
-        modal.style.display = "block";
+                if (element.classList.contains('found')) return;
 
-        data.opts.forEach((opt, i) => {
-            let btn = document.createElement('button');
-            btn.className = 'action-btn';
-            btn.innerText = opt;
-            btn.onclick = () => {
-                if (i === data.ans) {
-                    modal.style.display = "none";
-                    advanceStep();
-                } else {
-                    modal.style.display = "none";
-                    failGame("KNOWLEDGE GAP: Incorrect answer to safety regulation.");
+                element.classList.add('found');
+                sourcesFound++;
+                document.getElementById('source-count').innerText = sourcesFound;
+
+                if (sourcesFound === 3) {
+                    document.getElementById('btnS1').disabled = false;
+                    // Success Message after finding all
+                    setTimeout(() => {
+                        display.innerText = "ALL SOURCES IDENTIFIED.";
+                        display.style.background = "#333";
+                    }, 1000);
                 }
-            };
-            qOpts.appendChild(btn);
-        });
-    }
+            }
 
-    function failGame(reason) {
-        const container = document.getElementById('game-container');
-        const msg = document.getElementById('message-box');
-        
-        container.classList.add('shake');
-        msg.innerHTML = `<strong style="color:var(--alert-red)">AUDIT FAILED</strong><br>${reason}`;
-        
-        document.getElementById('actions-list').classList.add('hidden');
-        document.getElementById('restart-btn').classList.remove('hidden');
-    }
+            // --- LOGIC FOR SCREEN 2 (Drag & Drop) ---
+            function allowDrop(ev) { ev.preventDefault(); }
+            function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
 
-    function winGame() {
-        const msg = document.getElementById('message-box');
-        msg.innerHTML = `<strong style="color:var(--success-green)">PROCEDURE VERIFIED</strong><br>The machine is safely locked out. Zero energy confirmed.`;
-        document.getElementById('actions-list').innerHTML = "<h3 style='text-align:center; color:#28a745'>CERTIFIED</h3>";
-    }
+            function drop(ev) {
+                ev.preventDefault();
+                let data = ev.dataTransfer.getData("text");
+                const feedback = document.getElementById('dnd-feedback');
+                const panel = document.querySelector('.breaker-panel');
 
-    function restartGame() {
-        initGame();
-    }
+                if (data === "drag-tag" && !isLocked) {
+                    feedback.innerText = "PROCEDURAL ERROR: You cannot apply a tag before the lock.";
+                    shake(panel);
+                } else if (data === "drag-lock") {
+                    isLocked = true;
+                    panel.classList.add('locked');
+                    panel.innerHTML += '<div class="applied-lock">🔒</div>';
+                    document.getElementById('drag-lock').style.opacity = '0.3';
+                    document.getElementById('drag-lock').setAttribute('draggable', false);
+                    feedback.innerText = "";
+                } else if (data === "drag-tag" && isLocked) {
+                    isTagged = true;
+                    panel.innerHTML += '<div class="applied-tag">🏷️<br><small>D.CROOKS</small></div>';
+                    document.getElementById('drag-tag').style.opacity = '0.3';
+                    document.getElementById('drag-tag').setAttribute('draggable', false);
+                    document.getElementById('btnS2').disabled = false;
+                }
+            }
 
-    // Start on load
-    initGame();
-</script>
+            function shake(element) {
+                element.style.animation = "none";
+                element.offsetHeight; /* trigger reflow */
+                element.style.animation = "shake 0.5s";
+                const style = document.createElement('style');
+                style.innerHTML = `@keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }`;
+                document.head.appendChild(style);
+            }
 
-</body>
+            // --- LOGIC FOR SCREEN 3 (Decision) ---
+            function showResult(type) {
+                document.getElementById('screen3').classList.remove('active');
+                document.getElementById(`result-${type}`).classList.add('active');
+                document.getElementById('dot3').classList.remove('active');
+            }
+        </script>
+    </body>
 </html>
