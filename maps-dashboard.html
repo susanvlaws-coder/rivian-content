@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAPS Enablement Dashboard - Rivian Palette</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            /* RIVIAN PALETTE [Provided] */
+            
+            /* Backgrounds */
+            --bg-body: #242826;     /* Accent Black/Green */
+            --bg-card: #323c3a;     /* Primary Slate */
+            --border-color: #3c3c3c; /* Primary Dark Grey */
+            
+            /* Text */
+            --text-main: #f6f6f6;   /* Primary White */
+            --text-muted: #c3c7c3;  /* Grayscale Light */
+            
+            /* Accents */
+            --accent-sage: #798579; /* Success / Primary Chart */
+            --accent-yellow: #ffac00; /* Alert / Highlight */
+            --accent-sand: #f0eee9; /* Secondary Text */
+            --accent-gray: #a1a7a1; /* Grid Lines */
+        }
+
+        body {
+            font-family: 'Segoe UI', Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            height: 100vh;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; 
+        }
+
+        /* FLEX LAYOUT */
+        .header-section { flex: 0 0 auto; margin-bottom: 15px; }
+        .kpi-section { flex: 0 0 auto; margin-bottom: 15px; }
+        .main-section { flex: 1 1 auto; display: flex; gap: 15px; min-height: 0; }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: 0.5px;
+            color: var(--text-main);
+        }
+
+        .header .status-badge {
+            background-color: rgba(121, 133, 121, 0.2); /* Sage transparent */
+            color: var(--accent-sage);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1px solid var(--accent-sage);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* KPI GRID */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .kpi-card {
+            background-color: var(--bg-card);
+            padding: 15px;
+            border-radius: 4px; /* Squarer corners for Rivian style */
+            position: relative;
+            border: 1px solid var(--border-color);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 3px;
+            background-color: var(--text-muted);
+        }
+        
+        .kpi-card.sage::before { background-color: var(--accent-sage); }
+        .kpi-card.yellow::before { background-color: var(--accent-yellow); }
+
+        .kpi-card h3 {
+            margin: 0 0 5px 0;
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .kpi-card .value {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.1;
+            color: var(--text-main);
+        }
+
+        .kpi-card .sub-text {
+            font-size: 11px;
+            margin-top: 5px;
+            color: var(--text-muted);
+        }
+        .kpi-card.yellow .sub-text { color: var(--accent-yellow); }
+        .kpi-card.sage .sub-text { color: var(--accent-sage); }
+
+        /* MAIN CONTENT */
+        .chart-col { 
+            flex: 1; 
+            background-color: var(--bg-card); 
+            border-radius: 4px; 
+            border: 1px solid var(--border-color); 
+            padding: 15px; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        
+        .feedback-col { 
+            flex: 0.8; 
+            background-color: var(--bg-card); 
+            border-radius: 4px; 
+            border: 1px solid var(--border-color); 
+            padding: 15px; 
+            overflow-y: auto; 
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
+        }
+
+        .chart-container {
+            flex-grow: 1;
+            position: relative;
+            width: 100%;
+        }
+
+        /* FEEDBACK LOOP */
+        .feedback-item {
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .feedback-item:last-child { border-bottom: none; }
+        
+        .feedback-text { font-size: 12px; color: var(--accent-sand); font-style: italic; line-height: 1.3; }
+        
+        .tag { 
+            display: inline-block; width: fit-content; padding: 2px 8px; border-radius: 2px; 
+            font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        
+        .tag-sage { background-color: rgba(121, 133, 121, 0.2); color: var(--accent-sage); border: 1px solid var(--accent-sage); }
+        .tag-yellow { background-color: rgba(255, 172, 0, 0.15); color: var(--accent-yellow); border: 1px solid var(--accent-yellow); }
+
+    </style>
+</head>
+<body>
+
+    <div class="header-section">
+        <div class="header">
+            <div>
+                <h1>MAPS Enablement Dashboard</h1>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top:4px;">Strategy: MAPS Adoption | Phase: Pilot Launch</div>
+            </div>
+            <div class="status-badge">● Readiness: 92%</div>
+        </div>
+    </div>
+
+    <div class="kpi-section">
+        <div class="kpi-grid">
+            <div class="kpi-card sage">
+                <h3>Adoption Rate</h3>
+                <div class="value">88%</div>
+                <div class="sub-text">▲ 12% vs last week</div>
+            </div>
+            <div class="kpi-card sage">
+                <h3>Sim Proficiency</h3>
+                <div class="value">94%</div>
+                <div class="sub-text">Target Met (>90%)</div>
+            </div>
+            <div class="kpi-card yellow">
+                <h3>Live Error Rate</h3>
+                <div class="value">1.2%</div>
+                <div class="sub-text">⚠ Target: 0%</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Avg. Log Time</h3>
+                <div class="value">45s</div>
+                <div class="sub-text">▼ 15s improvement</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-section">
+        
+        <div class="chart-col">
+            <h3 class="section-title">Error Rate vs. Training Completion</h3>
+            <div class="chart-container">
+                <canvas id="impactChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-col">
+            <h3 class="section-title">Proficiency by Shop</h3>
+            <div class="chart-container">
+                <canvas id="shopChart"></canvas>
+            </div>
+        </div>
+
+        <div class="feedback-col">
+            <h3 class="section-title">User Feedback Loop</h3>
+            
+            <div class="feedback-item">
+                <span class="feedback-text">"Reason Code dropdown has too many options. Confusing."</span>
+                <span class="tag tag-sage">UX Optimization</span>
+            </div>
+            
+            <div class="feedback-item">
+                <span class="feedback-text">"Scanner disconnects at Station 4."</span>
+                <span class="tag tag-yellow">Hardware Bug</span>
+            </div>
+            
+            <div class="feedback-item">
+                <span class="feedback-text">"New downtime process is much faster."</span>
+                <span class="tag tag-sage">Positive Sentiment</span>
+            </div>
+            
+             <div class="feedback-item">
+                <span class="feedback-text">"Tablet glare makes it hard to see 'Submit'."</span>
+                <span class="tag tag-yellow">Environment</span>
+            </div>
+
+        </div>
+
+    </div>
+
+<script>
+    // Palette Constants from Prompt
+    const C_SAGE = '#798579';
+    const C_YELLOW = '#ffac00';
+    const C_TEXT = '#c3c7c3';   // Muted Text
+    const C_GRID = '#3c3c3c';   // Border/Grid Color
+
+    Chart.defaults.color = C_TEXT;
+    Chart.defaults.borderColor = C_GRID;
+    Chart.defaults.font.family = 'Segoe UI';
+    Chart.defaults.font.size = 10;
+
+    // Chart 1: Impact (Error Rate vs Training)
+    const ctxImpact = document.getElementById('impactChart').getContext('2d');
+    new Chart(ctxImpact, {
+        type: 'line',
+        data: {
+            labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4'],
+            datasets: [
+                {
+                    label: 'Errors %',
+                    data: [15, 8, 3.5, 1.2],
+                    borderColor: C_YELLOW,
+                    backgroundColor: 'rgba(255, 172, 0, 0.1)', // Yellow transparent
+                    borderWidth: 2,
+                    yAxisID: 'y',
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: 'Training %',
+                    data: [20, 55, 80, 92],
+                    type: 'bar',
+                    backgroundColor: C_SAGE,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { display: true, grid: { color: C_GRID } },
+                y1: { display: true, position: 'right', grid: { drawOnChartArea: false } }
+            }
+        }
+    });
+
+    // Chart 2: Shop Proficiency
+    const ctxShop = document.getElementById('shopChart').getContext('2d');
+    new Chart(ctxShop, {
+        type: 'bar',
+        data: {
+            labels: ['Shop A', 'Shop B', 'Shop C', 'Shop D'],
+            datasets: [{
+                label: 'FPY %',
+                data: [98, 75, 92, 88],
+                backgroundColor: [C_SAGE, C_YELLOW, C_SAGE, C_SAGE] // Yellow highlights the problem area
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, max: 100 } }
+        }
+    });
+</script>
+
+</body>
+</html>
