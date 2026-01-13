@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAPS Field Guide: Supervisor Playbook</title>
+    <style>
+        /* BRAND PALETTE (ANONYMIZED) */
+        :root {
+            --brand-primary: #00455f;   /* "Rivian Blue" - Deep, Trustworthy */
+            --brand-accent: #DEB526;    /* "Compass Yellow" - High Visibility/Alert */
+            --brand-dark: #3b3d40;      /* "Charcoal" - Text */
+            --brand-light: #cfd2ce;     /* "Glacier White" - Borders/Backgrounds */
+            --brand-bg: #f7f9f8;        /* Light background wash */
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+            background-color: #eef2f5;
+            color: var(--brand-dark);
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .page-container {
+            width: 850px;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            border-top: 8px solid var(--brand-primary);
+        }
+
+        /* HEADER */
+        .header {
+            background-color: #fff;
+            padding: 40px 40px 20px 40px;
+            border-bottom: 1px solid var(--brand-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+            color: var(--brand-primary);
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+        .header .sub-title {
+            font-size: 14px;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        .badge {
+            background-color: var(--brand-accent);
+            color: var(--brand-primary);
+            padding: 6px 12px;
+            font-weight: bold;
+            font-size: 12px;
+            border-radius: 2px;
+            text-transform: uppercase;
+        }
+
+        /* CONTENT GRID */
+        .content {
+            padding: 40px;
+            display: grid;
+            gap: 30px;
+        }
+
+        /* SECTIONS */
+        .section-box {
+            border: 1px solid var(--brand-light);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .section-header {
+            background-color: var(--brand-primary);
+            color: white;
+            padding: 10px 20px;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        .section-header .icon {
+            margin-right: 10px;
+            background: var(--brand-accent);
+            color: var(--brand-primary);
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .section-body {
+            padding: 20px;
+        }
+
+        /* SECTION 1: HUDDLE (Script Style) */
+        .script-box {
+            background-color: #f0f4f7;
+            border-left: 4px solid var(--brand-accent);
+            padding: 15px;
+            font-style: italic;
+            font-size: 15px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .script-label {
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--brand-primary);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            display: block;
+            font-style: normal;
+        }
+
+        /* SECTION 2: FLOOR WALK (Checklist) */
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #eee;
+        }
+        .checklist-item:last-child { border-bottom: none; margin-bottom: 0;}
+        .check-box {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--brand-light);
+            margin-right: 15px;
+            margin-top: 2px;
+        }
+        .check-text strong { display: block; color: var(--brand-primary); font-size: 14px;}
+        .check-text span { font-size: 13px; color: #666; }
+
+        /* SECTION 3: INTERVENTION (Matrix) */
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .matrix-table th {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 2px solid var(--brand-light);
+            color: #888;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        .matrix-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+        .scenario-tag {
+            background: #eee;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        /* FOOTER */
+        .footer {
+            background-color: #3b3d40;
+            color: #888;
+            padding: 20px 40px;
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-container">
+    
+    <div class="header">
+        <div>
+            <div class="sub-title">Shift Supervisor Adoption Tool</div>
+            <h1>MAPS Field Guide</h1>
+        </div>
+        <div class="badge">Version 1.2</div>
+    </div>
+
+    <div class="content">
+
+        <div class="section-box">
+            <div class="section-header">
+                <span class="icon">1</span>
+                PRE-SHIFT HUDDLE: Setting the Tone
+            </div>
+            <div class="section-body">
+                <p style="font-size: 13px; margin-bottom: 15px; color: #555;">
+                    <strong>The Goal:</strong> Counteract the "Speed vs. Accuracy" pressure before the line starts. Frame MAPS as a tool for <em>uptime</em>, not just data entry.
+                </p>
+                <div class="script-box">
+                    <span class="script-label">The Script (Say this):</span>
+                    "Team, our goal today is zero unplanned downtime. We use MAPS to spot issues before they stop the line. If you hit a snag with the tablet, call me immediately. Do not bypass the system to 'save time'—accurate data keeps the line running."
+                </div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-header">
+                <span class="icon">2</span>
+                THE FLOOR WALK: Visual Management
+            </div>
+            <div class="section-body">
+                <div class="checklist-item">
+                    <div class="check-box"></div>
+                    <div class="check-text">
+                        <strong>Tablet Proximity Check</strong>
+                        <span>Is the device mounted <em>at</em> the station? If it's more than 3 steps away, adoption drops by 40%.</span>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <div class="check-box"></div>
+                    <div class="check-text">
+                        <strong>The "Paper Note" Hunt</strong>
+                        <span>Look for operators writing data on scraps of paper to 'type in later.' This causes batch-errors. Stop this behavior immediately.</span>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <div class="check-box"></div>
+                    <div class="check-text">
+                        <strong>The 30-Second Rule</strong>
+                        <span>Observe one entry. If it takes >30 seconds, the operator needs re-training on the UI shortcuts.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-header">
+                <span class="icon">3</span>
+                INTERVENTION MATRIX: Correcting Behavior
+            </div>
+            <div class="section-body" style="padding:0;">
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%">Observed Behavior</th>
+                            <th style="width: 15%">Root Cause</th>
+                            <th>Supervisor Action / Script</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="scenario-tag">Struggling</span><br>User is slow or confused by the UI.</td>
+                            <td>Skill Gap</td>
+                            <td>
+                                <strong>Coaching:</strong> "I see you're stuck on the 'Reason Code'. Let's walk through this specific entry together right now."
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="scenario-tag">Skipping</span><br>User enters "N/A" or generic text to bypass fields.</td>
+                            <td>Will Gap</td>
+                            <td>
+                                <strong>Correction:</strong> "We can't track repairs with 'N/A'. I need you to update that record with the specific fault code before the next cycle."
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="scenario-tag">Refusing</span><br>User ignores device completely.</td>
+                            <td>Compliance</td>
+                            <td>
+                                <strong>Mandate:</strong> "Using MAPS is a safety and quality requirement, just like wearing your PPE. It is non-negotiable for this role."
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <div>EV Manufacturing Operations Learning Strategy</div>
+        <div>Target: 100% Data Accuracy (30 Days)</div>
+    </div>
+
+</div>
+
+</body>
+</html>
