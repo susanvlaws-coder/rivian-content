@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAPS Enablement Dashboard - Neutral</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            /* NEUTRAL INDUSTRIAL SAAS PALETTE (Matches Simulator) */
+            --bg-body: #0f172a;      /* Dark Navy/Black */
+            --bg-frame: #020617;     
+            --bg-screen: #1e293b;    /* Slate 800 */
+            --bg-card: #1e293b;      /* Matching screen bg for cards */
+            
+            --text-main: #f8fafc;    
+            --text-muted: #94a3b8;   
+            
+            --accent-primary: #3b82f6; /* Blue 500 */
+            --accent-alert: #ef4444;   /* Red 500 */
+            --accent-success: #10b981; /* Emerald 500 */
+            --accent-warning: #f59e0b; /* Amber 500 */
+            
+            --border-color: #334155; /* Slate 700 */
+        }
+
+        body {
+            font-family: 'Segoe UI', Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            height: 100vh; /* Force single screen height */
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; 
+        }
+
+        /* FLEX LAYOUT FOR HEIGHT MANAGEMENT */
+        .header-section { flex: 0 0 auto; margin-bottom: 15px; }
+        .kpi-section { flex: 0 0 auto; margin-bottom: 15px; }
+        .main-section { flex: 1 1 auto; display: flex; gap: 15px; min-height: 0; }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+
+        .header .status-badge {
+            background-color: rgba(16, 185, 129, 0.15); 
+            color: var(--accent-success);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1px solid var(--accent-success);
+            text-transform: uppercase;
+        }
+
+        /* KPI GRID */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .kpi-card {
+            background-color: var(--bg-card);
+            padding: 15px;
+            border-radius: 6px;
+            position: relative;
+            border: 1px solid var(--border-color);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 3px;
+            background-color: var(--text-muted);
+        }
+        
+        .kpi-card.blue::before { background-color: var(--accent-primary); }
+        .kpi-card.green::before { background-color: var(--accent-success); }
+        .kpi-card.red::before { background-color: var(--accent-alert); }
+
+        .kpi-card h3 {
+            margin: 0 0 5px 0;
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .kpi-card .value {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .kpi-card .sub-text {
+            font-size: 11px;
+            margin-top: 5px;
+            color: var(--text-muted);
+        }
+        .kpi-card.red .sub-text { color: var(--accent-alert); }
+        .kpi-card.green .sub-text { color: var(--accent-success); }
+
+        /* MAIN CONTENT */
+        .chart-col { 
+            flex: 1; 
+            background-color: var(--bg-card); 
+            border-radius: 6px; 
+            border: 1px solid var(--border-color); 
+            padding: 15px; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        
+        .feedback-col { 
+            flex: 0.8; 
+            background-color: var(--bg-card); 
+            border-radius: 6px; 
+            border: 1px solid var(--border-color); 
+            padding: 15px; 
+            overflow-y: auto; 
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            color: var(--text-main);
+        }
+
+        .chart-container {
+            flex-grow: 1;
+            position: relative;
+            width: 100%;
+        }
+
+        /* FEEDBACK COMPACT */
+        .feedback-item {
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .feedback-item:last-child { border-bottom: none; }
+        
+        .feedback-text { font-size: 12px; color: var(--text-muted); font-style: italic; line-height: 1.3; }
+        .tag { display: inline-block; width: fit-content; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        
+        .tag-ux { background-color: rgba(59, 130, 246, 0.2); color: var(--accent-primary); border: 1px solid var(--accent-primary); }
+        .tag-bug { background-color: rgba(239, 68, 68, 0.2); color: var(--accent-alert); border: 1px solid var(--accent-alert); }
+        .tag-kudos { background-color: rgba(16, 185, 129, 0.2); color: var(--accent-success); border: 1px solid var(--accent-success); }
+
+    </style>
+</head>
+<body>
+
+    <div class="header-section">
+        <div class="header">
+            <div>
+                <h1>MAPS Enablement Dashboard</h1>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top:4px;">Strategy: MAPS Adoption | Phase: Pilot Launch</div>
+            </div>
+            <div class="status-badge">● Readiness: 92%</div>
+        </div>
+    </div>
+
+    <div class="kpi-section">
+        <div class="kpi-grid">
+            <div class="kpi-card blue">
+                <h3>Adoption Rate</h3>
+                <div class="value">88%</div>
+                <div class="sub-text">▲ 12% vs last week</div>
+            </div>
+            <div class="kpi-card green">
+                <h3>Sim Proficiency</h3>
+                <div class="value">94%</div>
+                <div class="sub-text">Target Met (>90%)</div>
+            </div>
+            <div class="kpi-card red">
+                <h3>Live Error Rate</h3>
+                <div class="value">1.2%</div>
+                <div class="sub-text">⚠ Target: 0%</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Avg. Log Time</h3>
+                <div class="value">45s</div>
+                <div class="sub-text">▼ 15s improvement</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-section">
+        
+        <div class="chart-col">
+            <h3 class="section-title">Error Rate vs. Training Completion</h3>
+            <div class="chart-container">
+                <canvas id="impactChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-col">
+            <h3 class="section-title">Proficiency by Shop</h3>
+            <div class="chart-container">
+                <canvas id="shopChart"></canvas>
+            </div>
+        </div>
+
+        <div class="feedback-col">
+            <h3 class="section-title">User Feedback Loop</h3>
+            <div class="feedback-item">
+                <span class="feedback-text">"Reason Code dropdown has too many options. Confusing."</span>
+                <span class="tag tag-ux">UX Optimization</span>
+            </div>
+            <div class="feedback-item">
+                <span class="feedback-text">"Scanner disconnects at Station 4."</span>
+                <span class="tag tag-bug">Hardware Bug</span>
+            </div>
+            <div class="feedback-item">
+                <span class="feedback-text">"New downtime process is much faster."</span>
+                <span class="tag tag-kudos">Positive Sentiment</span>
+            </div>
+             <div class="feedback-item">
+                <span class="feedback-text">"Tablet glare makes it hard to see 'Submit'."</span>
+                <span class="tag tag-ux">Environment</span>
+            </div>
+        </div>
+
+    </div>
+
+<script>
+    // Palette Constants
+    const C_BLUE = '#3b82f6';
+    const C_GREEN = '#10b981';
+    const C_RED = '#ef4444';
+    const C_TEXT = '#94a3b8';
+    const C_GRID = '#334155';
+
+    Chart.defaults.color = C_TEXT;
+    Chart.defaults.borderColor = C_GRID;
+    Chart.defaults.font.family = 'Segoe UI';
+    Chart.defaults.font.size = 10;
+
+    // Chart 1: Impact
+    const ctxImpact = document.getElementById('impactChart').getContext('2d');
+    new Chart(ctxImpact, {
+        type: 'line',
+        data: {
+            labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4'],
+            datasets: [
+                {
+                    label: 'Errors %',
+                    data: [15, 8, 3.5, 1.2],
+                    borderColor: C_RED,
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    borderWidth: 2,
+                    yAxisID: 'y',
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: 'Training %',
+                    data: [20, 55, 80, 92],
+                    type: 'bar',
+                    backgroundColor: C_BLUE,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { display: true, grid: { color: C_GRID } },
+                y1: { display: true, position: 'right', grid: { drawOnChartArea: false } }
+            }
+        }
+    });
+
+    // Chart 2: Shop Proficiency
+    const ctxShop = document.getElementById('shopChart').getContext('2d');
+    new Chart(ctxShop, {
+        type: 'bar',
+        data: {
+            labels: ['Shop A', 'Shop B', 'Shop C', 'Shop D'],
+            datasets: [{
+                label: 'FPY %',
+                data: [98, 75, 92, 88],
+                backgroundColor: [C_GREEN, C_RED, C_GREEN, C_GREEN]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, max: 100 } }
+        }
+    });
+</script>
+
+</body>
+</html>
